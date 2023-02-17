@@ -1,0 +1,252 @@
+<template>
+  <div class="main-wrapper">
+   <h1 class="page-title">Vue Your Todo</h1>
+   <p class="subtitle">A to-do app powered by vue.js 3!</p>
+   <div class="new-task-wrapper">
+      <input type="text" placeholder="Type a new to-do item" class="new-task-input" v-model="newTaskInput" @keyup.enter="addTask">
+      <button class="new-task-button" @click="addTask">+ Add</button>
+   </div>
+   <nav>
+    <ul class="tab-wrapper">
+      <li class="tab-item is-active">
+        <button class="tab-button" @click="setView('All')">All ({{ allTask }})</button>
+      </li>
+      <li class="tab-item">
+        <button class="tab-button" @click="setView('Current')">Current ({{ currentTaskLength }})</button>
+      </li>
+      <li class="tab-item">
+        <button class="tab-button" @click="setView('Completed')">Completed ({{ completedTaskLength }})</button>
+      </li>
+    </ul>
+   </nav>
+   <!-- <p>{{ taskInView }}</p> -->
+   <ul class="task-list">
+    <li class="task-list-item" v-for="taskItem in taskInView" :key="taskItem.id">
+      <div class="task-list-checkbox-wrapper">
+        <IconCheckCircle v-if="taskItem.complete"/>
+        <IconCircle  v-else/>
+        <input type="checkbox" class="task-list-checkbox"  v-model="taskItem.complete"  :checked="taskItem.complete">
+      </div>
+      <input type="text" v-model="taskItem.label"  class="task-list-edit-input">
+      
+      <div class="task-list-cta">
+        <p><IconEdit class="task-list-cta-icon" @click="toggleEdit(taskItem.id)"/><span class="sr-only">Edit</span></p>
+        <p><IconDelete class="task-list-cta-icon" @click="deleteTask(taskItem.id)"/><span class="sr-only">Edit</span></p>
+      </div>
+    </li>
+   </ul>
+  </div>
+</template>
+
+<script>
+import {computed, reactive, toRefs} from 'vue'
+import IconDelete from './components/IconDelete.vue';
+import IconEdit from './components/IconEdit.vue';
+import IconCheckCircle from './components/IconCheckCircle.vue';
+import IconCircle from './components/IconCircle.vue';
+import {v4 as uuid} from 'uuid'
+
+export default{
+  name: 'App',
+  components: {
+    IconDelete,
+    IconEdit,
+    IconCheckCircle,
+    IconCircle
+  },
+  setup(){
+    const state = reactive({
+      currentView: 'All',
+      newTaskInput: '',
+      taskList: [
+        {
+          label: 'opo, dili ko na po alam',
+          id: uuid(),
+          complete: true
+        }
+      ]
+    })
+
+    const taskList = reactive({
+      all: computed(() => state.taskList),
+      current: computed(() => state.taskList.filter(item => item.complete === false)),
+      completed: computed(() => state.taskList.filter(item => item.complete === true)),
+    })
+
+    const taskViews = reactive({
+      allTaskLength: computed(() => taskList.all.length),
+      currentTaskLength: computed(() => taskList.current.length),
+      completedTaskLength: computed(() => taskList.completed.length)
+    })
+
+    const taskInView = computed(() => {
+      if(state.currentView === 'All'){
+        return state.taskList
+      }else if(state.currentView === 'Current'){
+        return state.taskList.filter(item => item.complete === false)
+      }else if(state.currentView === 'Completed'){
+        return state.taskList.filter(item => item.complete === true)
+      }else{
+        return state.taskList
+      }
+    })
+
+    const addTask = () =>{
+      state.taskList.push({
+        id: uuid(),
+        label:state.newTaskInput,
+        edit: false,
+        complete: false     
+      })
+      state.newTaskInput = ''
+    }
+
+    const toggleEdit = taskId => {
+      const taskIndex = state.taskList.findIndex(task => task.id === taskId)
+      state.taskList[taskIndex].edit = !state.taskList[taskIndex].edit
+    }
+
+    const deleteTask = taskId => {
+      const taskIndex = state.taskList.findIndex(task => task.id === taskId)
+      state.taskList.splice(taskIndex, 1)
+    }
+
+    const setView = viewLabel => {
+      state.currentView = viewLabel
+    }
+
+    return {
+      ...toRefs(state),
+      ...toRefs(taskViews),
+      addTask,
+      deleteTask,
+      setView,
+      taskInView,
+      toggleEdit
+    }
+  }
+}
+</script>
+
+<style scoped>
+.task-list-checkbox-wrapper{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content:center ;
+}
+.task-list-checkbox{
+  position: absolute;
+  opacity: 0;
+  left: -3px;
+  bottom: 2px;
+}
+.task-list-item{
+  border: 1px solid #f6f6f6;
+  box-shadow: 2px 2px 8px 0px #c0c0c0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0px 16px;
+  margin-bottom: 16px;
+}
+.task-list-item:focus,
+.task-list-item:hover{
+  border: 1px solid #0631f8;
+}
+.task-list-cta{
+  display: flex;
+  column-gap: 16px;
+}
+.task-list{
+  padding: 0;
+}
+.tab-item:hover .tab-button{
+  color: #0631f8;
+}
+.task-list-edit-input,
+.task-list-text{
+  margin-left: 12px;
+  font-weight: bold;
+  flex: 1;
+  border: 0;
+  font-size: 16px;
+}
+.tab-wrapper{
+  display: flex;
+  column-gap: 30px;
+  list-style: none;
+  margin: 45px 0px;
+  padding: 0;
+}
+.tab-item.is-active{
+  border-bottom: 3px solid #0631f8;
+}
+.tab-item.is-active .tab-button{
+  color: #2d2d2d;
+}
+.tab-item{
+  padding-bottom: 6px;
+}
+.tab-button{
+  border: 0;
+  background-color: transparent;
+  color: #6b6b6b;
+  letter-spacing: 1px;
+  font-weight: bold;
+  padding: 0;
+}
+.tab-button:hover{
+  cursor: pointer;
+}
+.page-title{
+  font-size: 40px;
+  letter-spacing: 1px;
+  color: #2d2d2d;
+  margin-bottom: 0;
+  margin-top: 104px;
+}
+.subtitle{
+  color: #6b6b6b;
+  margin-top: 0;
+}
+.main-wrapper{
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: left;
+}
+html{
+  background-color: #fbfbff;
+}
+.new-task-input{
+  padding: 16px;
+  flex: 1;
+  color: #959595;
+  border: none;
+  border-top-left-radius: 7px;
+  border-bottom-left-radius: 7px;
+  box-shadow: 2px 2px 8px 0px #c0c0c0;
+}
+.new-task-wrapper{
+  display: flex;
+}
+.new-task-button{
+  padding: 18px 24px;
+  background-color:#0631f8 ;
+  color: white;
+  border: none;
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+</style>
