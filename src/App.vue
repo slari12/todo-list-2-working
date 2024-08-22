@@ -21,7 +21,7 @@
         </li>
         <li class="tab-item">
           <button class="tab-button" @click="setView('Current')">
-            Current ({{ currentTaskLength }})
+            Pending ({{ currentTaskLength }})
           </button>
         </li>
         <li class="tab-item">
@@ -44,7 +44,7 @@
             type="checkbox"
             class="task-list-checkbox"
             v-model="taskItem.complete"
-            :checked="(taskItem.complete = true)"
+            :checked="taskItem.complete"
             @change="completeTask(taskItem.id)"
           />
         </div>
@@ -115,7 +115,7 @@ export default {
     const taskInView = computed(() => {
       if (state.currentView === "All") {
         return state.taskList;
-      } else if (state.currentView === "Current") {
+      } else if (state.currentView === "Todos") {
         return state.taskList.filter((item) => item.complete === false);
       } else if (state.currentView === "Completed") {
         return state.taskList.filter((item) => item.complete === true);
@@ -142,9 +142,15 @@ export default {
       updateLocalStorage();
     };
 
+    // const completeTask = (taskId) => {
+    //   const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
+    //   state.taskList[taskIndex].complete = !state.taskList[taskIndex].complete;
+    //   updateLocalStorage();
+    // };
+
     const completeTask = (taskId) => {
       const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
-      state.taskList[taskIndex].complete = !state.taskList[taskIndex].complete;
+      state.taskList[taskIndex.complete] = !state.taskList[taskIndex.complete];
       updateLocalStorage();
     };
 
