@@ -48,6 +48,9 @@
             @change="completeTask(taskItem.id)"
           />
         </div>
+
+        <!-- input text is disabled by default, only enabled when 'edit' is clicked
+        line-through and active border style is applied when completed -->
         <input
           type="text"
           v-model="taskItem.label"
@@ -61,11 +64,13 @@
 
         <div class="task-list-cta">
           <p>
+            <!-- edit button is visible when task is not completed, and hidden when completed -->
             <span
               :style="{ visibility: !taskItem.complete ? 'visible' : 'hidden' }"
               style="cursor: pointer"
               @click="toggleEdit(taskItem.id)"
             >
+              <!-- chenges in label depending if it is in edit mode or not -->
               {{ taskItem.edit ? "Save" : "Edit" }}
             </span>
           </p>
@@ -104,6 +109,7 @@ export default {
       taskList: JSON.parse(localStorage.getItem("taskList")) || [],
     });
 
+    // for viewing and filtering of tasklist depending on status
     const taskList = reactive({
       all: computed(() => state.taskList),
       current: computed(() =>
@@ -114,6 +120,7 @@ export default {
       ),
     });
 
+    // determining the number or task on each status
     const taskViews = reactive({
       allTaskLength: computed(() => taskList.all.length),
       currentTaskLength: computed(() => taskList.current.length),
@@ -122,16 +129,20 @@ export default {
 
     const taskInView = computed(() => {
       if (state.currentView === "All") {
+        // for sorting the completed task and placing it on the bottom of the list
         return state.taskList.sort((a, b) => a.complete - b.complete);
       } else if (state.currentView === "Todos") {
+        // will show not completed tasks only
         return state.taskList.filter((item) => item.complete === false);
       } else if (state.currentView === "Completed") {
+        // will show completed tasks only
         return state.taskList.filter((item) => item.complete === true);
       } else {
         return state.taskList;
       }
     });
 
+    // initial state when a task is added
     const addTask = () => {
       state.taskList.push({
         id: uuid(),
@@ -144,9 +155,10 @@ export default {
       updateLocalStorage();
     };
 
+    // boolean is set to true to disable input text edit mode when a task is added
     const isDisabled = ref(true);
-    const isHidden = ref(false);
 
+    // toggles edit mode for a task
     const toggleEdit = (taskId) => {
       const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
       state.taskList[taskIndex].edit = !state.taskList[taskIndex].edit;
@@ -156,23 +168,28 @@ export default {
       updateLocalStorage();
     };
 
+    // completed task status toggle
     const completeTask = (taskId) => {
       const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
       state.taskList[taskIndex.complete] = !state.taskList[taskIndex.complete];
       updateLocalStorage();
     };
 
+    // delete a task from the list with splice on a certain taskIndex
     const deleteTask = (taskId) => {
       const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
       state.taskList.splice(taskIndex, 1);
       updateLocalStorage();
     };
 
+    // to view all, pending or completed tasks
     const setView = (viewLabel) => {
       updateLocalStorage();
       state.currentView = viewLabel;
     };
 
+    // to update the local storage with the updated task list
+    // also to prevent losing the data when the page is refreshed
     const updateLocalStorage = () => {
       localStorage.setItem("taskList", JSON.stringify(state.taskList));
     };
