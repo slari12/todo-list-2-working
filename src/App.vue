@@ -14,17 +14,17 @@
     </div>
     <nav>
       <ul class="tab-wrapper">
-        <li class="tab-item is-active">
+        <li class="tab is-active">
           <button class="tab-button" @click="setView('All')">
             All ({{ allTaskLength }})
           </button>
         </li>
-        <li class="tab-item">
+        <li class="tab">
           <button class="tab-button" @click="setView('Todos')">
             Pending ({{ currentTaskLength }})
           </button>
         </li>
-        <li class="tab-item">
+        <li class="tab">
           <button class="tab-button" @click="setView('Completed')">
             Completed ({{ completedTaskLength }})
           </button>
@@ -52,12 +52,14 @@
           type="text"
           v-model="taskItem.label"
           class="task-list-edit-input"
+          :disabled="isDisabled"
         />
 
         <div class="task-list-cta">
           <p>
             <IconEdit
               class="task-list-cta-icon"
+              :class="{ 'active-border': !isDisabled }"
               @click="toggleEdit(taskItem.id)"
             /><span class="sr-only">Edit</span>
           </p>
@@ -65,7 +67,7 @@
             <IconDelete
               class="task-list-cta-icon"
               @click="deleteTask(taskItem.id)"
-            /><span class="sr-only">Edit</span>
+            /><span class="sr-only">Delete</span>
           </p>
         </div>
       </li>
@@ -74,7 +76,7 @@
 </template>
 
 <script>
-import { computed, reactive, toRefs } from "vue";
+import { computed, reactive, toRefs, ref } from "vue";
 import IconDelete from "./components/IconDelete.vue";
 import IconEdit from "./components/IconEdit.vue";
 import IconCheckCircle from "./components/IconCheckCircle.vue";
@@ -132,21 +134,17 @@ export default {
         complete: false,
       });
       state.newTaskInput = "";
+      state.isDisabled = true;
       updateLocalStorage();
     };
 
+    const isDisabled = ref(true);
     const toggleEdit = (taskId) => {
       const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
-      // state.taskList[taskIndex].edit = !state.taskList[taskIndex].edit;
       state.taskList[taskIndex].edit = !state.taskList[taskIndex].edit;
+      // state.isDisabled = !state.isDisabled;
       updateLocalStorage();
     };
-
-    // const completeTask = (taskId) => {
-    //   const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
-    //   state.taskList[taskIndex].complete = !state.taskList[taskIndex].complete;
-    //   updateLocalStorage();
-    // };
 
     const completeTask = (taskId) => {
       const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
@@ -176,8 +174,9 @@ export default {
       deleteTask,
       completeTask,
       setView,
-      taskInView,
       toggleEdit,
+      taskInView,
+      isDisabled,
     };
   },
 };
@@ -216,31 +215,30 @@ export default {
 .task-list {
   padding: 0;
 }
-.tab-item:hover .tab-button {
+.tab:hover .tab-button {
   color: #0631f8;
 }
 .task-list-edit-input,
 .task-list-text {
-  margin-left: 12px;
+  margin: 0 12px;
   font-weight: bold;
   flex: 1;
   border: 0;
   font-size: 16px;
 }
+
+.task-list-edit-input:disabled {
+  background: transparent;
+}
 .tab-wrapper {
   display: flex;
   column-gap: 30px;
   list-style: none;
-  margin: 45px 0px;
+  margin: 20px 0px 0px 0px;
   padding: 0;
 }
-.tab-item.is-active {
-  border-bottom: 3px solid #0631f8;
-}
-.tab-item.is-active .tab-button {
-  color: #2d2d2d;
-}
-.tab-item {
+
+.tab {
   padding-bottom: 6px;
 }
 .tab-button {
@@ -305,5 +303,8 @@ html {
 }
 .task-list-cta-icon {
   cursor: pointer;
+}
+.is-active {
+  color: #0631f8;
 }
 </style>
