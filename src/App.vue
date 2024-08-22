@@ -61,12 +61,11 @@
 
         <div class="task-list-cta">
           <p>
-            <!-- <IconEdit
-              class="task-list-cta-icon"
-              :class="{ 'active-border': !isDisabled }"
+            <span
+              :style="{ visibility: !taskItem.complete ? 'visible' : 'hidden' }"
+              style="cursor: pointer"
               @click="toggleEdit(taskItem.id)"
-            /> -->
-            <span style="cursor: pointer" @click="toggleEdit(taskItem.id)">
+            >
               {{ taskItem.edit ? "Save" : "Edit" }}
             </span>
           </p>
@@ -127,10 +126,7 @@ export default {
       } else if (state.currentView === "Todos") {
         return state.taskList.filter((item) => item.complete === false);
       } else if (state.currentView === "Completed") {
-        return state.taskList.filter((item) => {
-          isDisabled === true;
-          item.complete === true;
-        });
+        return state.taskList.filter((item) => item.complete === true);
       } else {
         return state.taskList;
       }
@@ -149,15 +145,14 @@ export default {
     };
 
     const isDisabled = ref(true);
+    const isHidden = ref(false);
 
     const toggleEdit = (taskId) => {
       const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
       state.taskList[taskIndex].edit = !state.taskList[taskIndex].edit;
-
       if (!state.taskList[taskIndex].edit) {
         state.isDisabled = !state.isDisabled;
       }
-
       updateLocalStorage();
     };
 
