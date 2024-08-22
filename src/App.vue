@@ -66,8 +66,11 @@
           <p>
             <!-- edit button is visible when task is not completed, and hidden when completed -->
             <span
-              :style="{ visibility: !taskItem.complete ? 'visible' : 'hidden' }"
-              style="cursor: pointer"
+              :style="{
+                visibility: !taskItem.complete ? 'visible' : 'hidden',
+                color: !taskItem.edit ? '#3572EF' : '#399918',
+              }"
+              style="cursor: pointer; font-weight: bold"
               @click="toggleEdit(taskItem.id)"
             >
               <!-- chenges in label depending if it is in edit mode or not -->
@@ -339,7 +342,7 @@ html {
 }
 .active-border {
   box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
+  border-radius: 5px;
   padding: 7px 9px;
 }
 </style>
