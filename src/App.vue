@@ -32,6 +32,13 @@
       </ul>
     </nav>
     <ul class="task-list">
+      <div
+        :style="{ visibility: taskInView.length === 0 ? 'visible' : 'hidden' }"
+        class="initial-task-list"
+      >
+        Add a new task to get started!
+      </div>
+
       <li
         class="task-list-item"
         v-for="taskItem in taskInView"
@@ -73,7 +80,7 @@
               style="cursor: pointer; font-weight: bold"
               @click="toggleEdit(taskItem.id)"
             >
-              <!-- chenges in label depending if it is in edit mode or not -->
+              <!-- changes in label depending if it is in edit mode or not -->
               {{ taskItem.edit ? "Save" : "Edit" }}
             </span>
           </p>
@@ -85,6 +92,12 @@
           </p>
         </div>
       </li>
+      <div
+        :style="{ visibility: taskInView.length !== 0 ? 'visible' : 'hidden' }"
+        class="delete-all"
+      >
+        Delete All Recorded Tasks
+      </div>
     </ul>
   </div>
 </template>
@@ -111,6 +124,11 @@ export default {
       newTaskInput: "",
       taskList: JSON.parse(localStorage.getItem("taskList")) || [],
     });
+
+    const initialTaskList = () => {
+      if (taskList.value.length === 0) {
+      }
+    };
 
     // for viewing and filtering of tasklist depending on status
     const taskList = reactive({
@@ -213,6 +231,27 @@ export default {
 </script>
 
 <style scoped>
+.initial-task-list {
+  font-family: Arial, Helvetica, sans-serif;
+  font-style: italic;
+  font-weight: bold !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 240px;
+  width: 100%;
+  color: rgb(163, 161, 161);
+  position: absolute;
+}
+.delete-all {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  font-weight: bold !important;
+  color: #c7253e;
+  cursor: pointer;
+}
 .task-list-checkbox-wrapper {
   position: relative;
   display: flex;
@@ -255,6 +294,7 @@ export default {
   flex: 1;
   border: 0;
   font-size: 16px;
+  min-width: 50px;
 }
 
 .task-list-edit-input:disabled {
@@ -262,7 +302,7 @@ export default {
 }
 .tab-wrapper {
   display: flex;
-  column-gap: 30px;
+  column-gap: 20px;
   list-style: none;
   margin: 20px 0px 0px 0px;
   padding: 0;
@@ -297,6 +337,7 @@ export default {
   max-width: 600px;
   margin: 0 auto;
   text-align: left;
+  position: relative;
 }
 html {
   background-color: #fbfbff;
