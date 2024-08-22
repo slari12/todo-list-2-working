@@ -117,7 +117,7 @@ export default {
 
     const taskInView = computed(() => {
       if (state.currentView === "All") {
-        return state.taskList;
+        return state.taskList.sort((a, b) => a.complete - b.complete);
       } else if (state.currentView === "Todos") {
         return state.taskList.filter((item) => item.complete === false);
       } else if (state.currentView === "Completed") {
