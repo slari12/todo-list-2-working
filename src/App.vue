@@ -52,17 +52,23 @@
           type="text"
           v-model="taskItem.label"
           class="task-list-edit-input"
-          :class="{ complete: taskItem.complete }"
-          :disabled="isDisabled"
+          :disabled="!taskItem.edit"
+          :class="{
+            complete: taskItem.complete,
+            'active-border': taskItem.edit,
+          }"
         />
 
         <div class="task-list-cta">
           <p>
-            <IconEdit
+            <!-- <IconEdit
               class="task-list-cta-icon"
               :class="{ 'active-border': !isDisabled }"
               @click="toggleEdit(taskItem.id)"
-            /><span class="sr-only">Edit</span>
+            /> -->
+            <span style="cursor: pointer" @click="toggleEdit(taskItem.id)">
+              {{ taskItem.edit ? "Save" : "Edit" }}
+            </span>
           </p>
           <p>
             <IconDelete
@@ -121,7 +127,10 @@ export default {
       } else if (state.currentView === "Todos") {
         return state.taskList.filter((item) => item.complete === false);
       } else if (state.currentView === "Completed") {
-        return state.taskList.filter((item) => item.complete === true);
+        return state.taskList.filter((item) => {
+          isDisabled === true;
+          item.complete === true;
+        });
       } else {
         return state.taskList;
       }
@@ -140,10 +149,15 @@ export default {
     };
 
     const isDisabled = ref(true);
+
     const toggleEdit = (taskId) => {
       const taskIndex = state.taskList.findIndex((task) => task.id === taskId);
       state.taskList[taskIndex].edit = !state.taskList[taskIndex].edit;
-      // state.isDisabled = !state.isDisabled;
+
+      if (!state.taskList[taskIndex].edit) {
+        state.isDisabled = !state.isDisabled;
+      }
+
       updateLocalStorage();
     };
 
@@ -310,5 +324,10 @@ html {
 }
 .complete {
   text-decoration: line-through;
+}
+.active-border {
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 7px 9px;
 }
 </style>
