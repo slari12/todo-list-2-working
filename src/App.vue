@@ -52,6 +52,7 @@
           type="text"
           v-model="taskItem.label"
           class="task-list-edit-input"
+          :class="{ complete: taskItem.complete }"
           :disabled="isDisabled"
         />
 
@@ -306,5 +307,8 @@ html {
 }
 .is-active {
   color: #0631f8;
+}
+.complete {
+  text-decoration: line-through;
 }
 </style>
