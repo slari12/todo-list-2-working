@@ -16,11 +16,11 @@
       <ul class="tab-wrapper">
         <li class="tab-item is-active">
           <button class="tab-button" @click="setView('All')">
-            All ({{ allTask }})
+            All ({{ allTaskLength }})
           </button>
         </li>
         <li class="tab-item">
-          <button class="tab-button" @click="setView('Current')">
+          <button class="tab-button" @click="setView('Todos')">
             Pending ({{ currentTaskLength }})
           </button>
         </li>
