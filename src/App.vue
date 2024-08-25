@@ -95,6 +95,7 @@
       <div
         :style="{ visibility: taskInView.length !== 0 ? 'visible' : 'hidden' }"
         class="delete-all"
+        @click="deleteAll"
       >
         Delete All Recorded Tasks
       </div>
@@ -124,11 +125,6 @@ export default {
       newTaskInput: "",
       taskList: JSON.parse(localStorage.getItem("taskList")) || [],
     });
-
-    const initialTaskList = () => {
-      if (taskList.value.length === 0) {
-      }
-    };
 
     // for viewing and filtering of tasklist depending on status
     const taskList = reactive({
@@ -203,6 +199,13 @@ export default {
       updateLocalStorage();
     };
 
+    const deleteAll = () => {
+      if (state.taskList.length > 0) {
+        state.taskList = [];
+        updateLocalStorage();
+      }
+    };
+
     // to view all, pending or completed tasks
     const setView = (viewLabel) => {
       updateLocalStorage();
@@ -220,6 +223,7 @@ export default {
       ...toRefs(taskViews),
       addTask,
       deleteTask,
+      deleteAll,
       completeTask,
       setView,
       toggleEdit,
